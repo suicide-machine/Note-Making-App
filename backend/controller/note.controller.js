@@ -116,3 +116,39 @@ export const deleteNote = async (req, res, next) => {
     next(error)
   }
 }
+
+export const updateNotePinned = async (req, res, next) => {
+  try {
+    const note = await Note.findById(req.params.noteId)
+
+    //   console.log(req.params.noteId)
+
+    if (!note) {
+      return next(errorHandler(404, "Note not found!"))
+    }
+
+    if (req.user.id !== note.userId) {
+      return next(errorHandler(401, "You can only update your own note!"))
+    }
+
+    const { isPinned } = req.body
+
+    if (!isPinned) {
+      return next(errorHandler("No Changes Provided"))
+    }
+
+    if (isPinned) {
+      note.isPinned = isPinned
+    }
+
+    await note.save()
+
+    res.status(200).json({
+      success: true,
+      message: "Note updated successfully",
+      note,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
