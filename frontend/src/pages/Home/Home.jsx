@@ -7,6 +7,7 @@ import Modal from "react-modal"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../utils/axiosInstance"
 import { useSelector } from "react-redux"
+import axios from "axios"
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -20,6 +21,9 @@ const Home = () => {
   )
 
   const [userInfo, setUserInfo] = useState(null)
+  const [allNotes, setAllNotes] = useState([])
+
+  // console.log(allNotes)
 
   const navigate = useNavigate()
 
@@ -39,8 +43,28 @@ const Home = () => {
       navigate("/login")
     } else {
       setUserInfo(currentUser?.rest)
+      getAllNotes()
     }
   }, [])
+
+  // get all notes
+  const getAllNotes = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/note/all", {
+        withCredentials: true,
+      })
+
+      if (res.data.success === false) {
+        console.log(res.data)
+        return
+      }
+
+      // console.log(res.data.notes)
+      setAllNotes(res.data.notes)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -48,18 +72,21 @@ const Home = () => {
 
       <div className="container mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-4 mt-8 max-md:m-5">
-          <NoteCard
-            title={"Meeting on Sunday"}
-            date={"5th June, 2024"}
-            content={"Meeting on Sunday"}
-            tags={"#Meeting"}
-            isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
-          />
+          {allNotes.map((note, index) => (
+            <NoteCard
+              key={note._id}
+              title={note.title}
+              date={note.createdAt}
+              content={note.content}
+              tags={note.tags}
+              isPinned={note.isPinned}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onPinNote={() => {}}
+            />
+          ))}
 
-          <NoteCard
+          {/* <NoteCard
             title={"Meeting on Sunday"}
             date={"5th June, 2024"}
             content={"Meeting on Sunday"}
@@ -68,40 +95,7 @@ const Home = () => {
             onEdit={() => {}}
             onDelete={() => {}}
             onPinNote={() => {}}
-          />
-
-          <NoteCard
-            title={"Meeting on Sunday"}
-            date={"5th June, 2024"}
-            content={"Meeting on Sunday"}
-            tags={"#Meeting"}
-            isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
-          />
-
-          <NoteCard
-            title={"Meeting on Sunday"}
-            date={"5th June, 2024"}
-            content={"Meeting on Sunday"}
-            tags={"#Meeting"}
-            isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
-          />
-
-          <NoteCard
-            title={"Meeting on Sunday"}
-            date={"5th June, 2024"}
-            content={"Meeting on Sunday"}
-            tags={"#Meeting"}
-            isPinned={true}
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onPinNote={() => {}}
-          />
+          /> */}
         </div>
       </div>
 
