@@ -6,6 +6,7 @@ import AddEditNotes from "./AddEditNotes"
 import Modal from "react-modal"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../utils/axiosInstance"
+import { useSelector } from "react-redux"
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -14,28 +15,36 @@ const Home = () => {
     data: null,
   })
 
+  const { currentUser, loading, errorDispatch } = useSelector(
+    (state) => state.user
+  )
+
   const [userInfo, setUserInfo] = useState(null)
 
   const navigate = useNavigate()
 
   // get user info
-  const getUserInfo = async () => {
-    try {
-      const res = await axiosInstance.get("/api/auth/get-user")
+  // const getUserInfo = async () => {
+  //   try {
+  //     const res = await axiosInstance.get("/api/auth/get-user")
 
-      console.log(res)
-    } catch (error) {
-      console.log(error)
-    }
-  }
+  //     console.log(res)
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // }
 
   useEffect(() => {
-    getUserInfo()
+    if (currentUser === null) {
+      navigate("/login")
+    } else {
+      setUserInfo(currentUser?.rest)
+    }
   }, [])
 
   return (
     <>
-      <Navbar />
+      <Navbar userInfo={userInfo} />
 
       <div className="container mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-4 mt-8 max-md:m-5">
