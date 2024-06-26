@@ -133,13 +133,7 @@ export const updateNotePinned = async (req, res, next) => {
 
     const { isPinned } = req.body
 
-    if (!isPinned) {
-      return next(errorHandler(400, "No Changes Provided"))
-    }
-
-    if (isPinned) {
-      note.isPinned = isPinned
-    }
+    note.isPinned = isPinned
 
     await note.save()
 

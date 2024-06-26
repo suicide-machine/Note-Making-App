@@ -127,6 +127,32 @@ const Home = () => {
     getAllNotes()
   }
 
+  const updateIsPinned = async (noteData) => {
+    const noteId = noteData._id
+
+    try {
+      const res = await axios.put(
+        "http://localhost:3000/api/note/update-note-pinned/" + noteId,
+        { isPinned: !noteData.isPinned },
+        { withCredentials: true }
+      )
+
+      if (res.data.success === false) {
+        console.log(res.data.message)
+        toast.error(res.data.message)
+        setError(res.data.message)
+        return
+      }
+
+      toast.success(res.data.message)
+      getAllNotes()
+
+      // console.log(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <Navbar
@@ -152,7 +178,9 @@ const Home = () => {
                 onDelete={() => {
                   deleteNote(note)
                 }}
-                onPinNote={() => {}}
+                onPinNote={() => {
+                  updateIsPinned(note)
+                }}
               />
             ))}
 
