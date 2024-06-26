@@ -4,6 +4,7 @@ import PasswordInput from "../../components/Input/PasswordInput"
 import { Link, useNavigate } from "react-router-dom"
 import { validateEmail } from "../../utils/helper"
 import axios from "axios"
+import { toast } from "react-toastify"
 
 const SignUp = () => {
   const [name, setName] = useState("")
@@ -47,14 +48,16 @@ const SignUp = () => {
 
       if (res.data.success === false) {
         setError(res.data.message)
+        toast.error(res.data.message)
         return
       }
 
       setError("")
-
+      toast.success(res.data.message)
       navigate("/login")
     } catch (error) {
       console.log(error)
+      toast.error(error.message)
       setError(error.message)
     }
   }

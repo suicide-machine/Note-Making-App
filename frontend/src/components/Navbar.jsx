@@ -10,6 +10,7 @@ import {
 } from "../redux/user/userSlice"
 import axios from "axios"
 import axiosInstance from "../utils/axiosInstance"
+import { toast } from "react-toastify"
 
 const Navbar = ({ userInfo }) => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -27,12 +28,15 @@ const Navbar = ({ userInfo }) => {
       })
 
       if (res.data.success === false) {
-        dispatch(signOutUserFailure(data.message))
+        dispatch(signOutUserFailure(res.data.message))
+        toast.error(res.data.message)
       }
 
+      toast.success(res.data.message)
       dispatch(signOutUserSuccess())
       navigate("/login")
     } catch (error) {
+      toast.error(error.message)
       dispatch(signOutUserFailure())
     }
   }
