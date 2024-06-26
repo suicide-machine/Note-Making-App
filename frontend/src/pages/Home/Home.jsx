@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../utils/axiosInstance"
 import { useSelector } from "react-redux"
 import axios from "axios"
+import { toast } from "react-toastify"
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -70,6 +71,33 @@ const Home = () => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" })
   }
 
+  // Delete Note
+  const deleteNote = async (data) => {
+    const noteId = data._id
+    try {
+      const res = await axios.delete(
+        "http://localhost:3000/api/note/delete/" + noteId,
+        { withCredentials: true }
+      )
+
+      if (res.data.success === false) {
+        console.log(res.data.message)
+        toast.error(res.data.message)
+        setError(res.data.message)
+        return
+      }
+
+      toast.success(res.data.message)
+      getAllNotes()
+
+      // console.log(res.data)
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+      setError(error.message)
+    }
+  }
+
   return (
     <>
       <Navbar userInfo={userInfo} />
@@ -87,7 +115,9 @@ const Home = () => {
               onEdit={() => {
                 handleEdit(note)
               }}
-              onDelete={() => {}}
+              onDelete={() => {
+                deleteNote(note)
+              }}
               onPinNote={() => {}}
             />
           ))}
