@@ -4,9 +4,9 @@ import { MdClose } from "react-icons/md"
 import axios from "axios"
 
 const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
-  const [title, setTitle] = useState("")
-  const [content, setContent] = useState("")
-  const [tags, setTags] = useState([])
+  const [title, setTitle] = useState(noteData?.title || "")
+  const [content, setContent] = useState(noteData?.content || "")
+  const [tags, setTags] = useState(noteData?.tags || [])
 
   const [error, setError] = useState(null)
 
@@ -36,7 +36,30 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
   }
 
   // Edit Note
-  const editNote = async () => {}
+  const editNote = async () => {
+    const noteId = noteData._id
+    try {
+      const res = await axios.put(
+        "http://localhost:3000/api/note/edit/" + noteId,
+        { title, content, tags },
+        { withCredentials: true }
+      )
+
+      if (res.data.success === false) {
+        console.log(res.data.message)
+        setError(res.data.message)
+        return
+      }
+
+      getAllNotes()
+      onClose()
+
+      // console.log(res.data)
+    } catch (error) {
+      console.log(error)
+      setError(error.message)
+    }
+  }
 
   const handleAddNote = () => {
     if (!title) {
@@ -102,7 +125,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
         className="btn-primary font-medium mt-5 p-3"
         onClick={handleAddNote}
       >
-        ADD
+        {type === "edit" ? "UPDATE" : "ADD"}
       </button>
     </div>
   )
