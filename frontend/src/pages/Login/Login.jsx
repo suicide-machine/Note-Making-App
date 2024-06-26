@@ -10,6 +10,7 @@ import {
   signInStart,
   signInSuccess,
 } from "../../redux/user/userSlice"
+import axios from "axios"
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -40,15 +41,21 @@ const Login = () => {
 
     try {
       dispatch(signInStart())
-      const res = await axiosInstances.post("/api/auth/signin", {
-        email: email,
-        password: password,
-      })
+
+      const res = await axios.post(
+        "http://localhost:3000/api/auth/signin",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      )
 
       if (res.data.success === false) {
-        console.log(res.data)
-        dispatch(signInFailure(data.message))
+        dispatch(signInFailure(res.data.message))
+        return
       }
+
       dispatch(signInSuccess(res.data))
       navigate("/")
     } catch (error) {

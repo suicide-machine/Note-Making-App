@@ -51,7 +51,7 @@ export const signin = async (req, res, next) => {
 
     res.cookie("access_token", token, { httpOnly: true }).status(200).json({
       success: true,
-      message: "Login Successful!",
+      message: "User logged in successfully!",
       rest,
     })
   } catch (error) {
@@ -74,4 +74,16 @@ export const getuser = async (req, res, next) => {
       rest,
     })
   } catch (error) {}
+}
+
+export const signout = (req, res, next) => {
+  try {
+    res.clearCookie("access_token")
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully!",
+    })
+  } catch (error) {
+    next(error)
+  }
 }
