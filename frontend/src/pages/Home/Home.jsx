@@ -25,6 +25,8 @@ const Home = () => {
   const [userInfo, setUserInfo] = useState(null)
   const [allNotes, setAllNotes] = useState([])
 
+  const [isSearch, setIsSearch] = useState(false)
+
   // console.log(allNotes)
 
   const navigate = useNavigate()
@@ -99,9 +101,39 @@ const Home = () => {
     }
   }
 
+  const onSearchNote = async (query) => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/note/search", {
+        params: { query },
+        withCredentials: true,
+      })
+
+      if (res.data.success === false) {
+        console.log(res.data.message)
+        toast.error(res.data.message)
+        return
+      }
+
+      setIsSearch(true)
+      setAllNotes(res.data.notes)
+    } catch (error) {
+      console.log(error)
+      toast.error(error.message)
+    }
+  }
+
+  const handleClearSearch = () => {
+    setIsSearch(false)
+    getAllNotes()
+  }
+
   return (
     <>
-      <Navbar userInfo={userInfo} />
+      <Navbar
+        userInfo={userInfo}
+        onSearchNote={onSearchNote}
+        handleClearSearch={handleClearSearch}
+      />
 
       <div className="container mx-auto">
         {allNotes.length > 0 ? (
@@ -138,9 +170,15 @@ const Home = () => {
         ) : (
           <EmptyCard
             imgSrc={
-              "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-notes-1522344-1288402.png"
+              isSearch
+                ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRG7FOz3n36MReKxRIjAbLfKPRamPDAsXlZL5jhe0mZ19OF4LiIEgowPCa1-Q&s"
+                : "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-notes-1522344-1288402.png"
             }
-            message={`Ready to capture your ideas? Click the 'Add' button to start noting down your thoughts, inspirations, and reminders. Let's get started!`}
+            message={
+              isSearch
+                ? "Oops! No Notes found matching your search "
+                : `Ready to capture your ideas? Click the 'Add' button to start noting down your thoughts, inspirations, and reminders. Let's get started!`
+            }
           />
         )}
       </div>

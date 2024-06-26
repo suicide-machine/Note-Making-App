@@ -134,7 +134,7 @@ export const updateNotePinned = async (req, res, next) => {
     const { isPinned } = req.body
 
     if (!isPinned) {
-      return next(errorHandler("No Changes Provided"))
+      return next(errorHandler(400, "No Changes Provided"))
     }
 
     if (isPinned) {
@@ -147,6 +147,32 @@ export const updateNotePinned = async (req, res, next) => {
       success: true,
       message: "Note updated successfully",
       note,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+export const searchNote = async (req, res, next) => {
+  const { query } = req.query
+
+  if (!query) {
+    return next(errorHandler(400, "Search query is required"))
+  }
+
+  try {
+    const matchingNotes = await Note.find({
+      userId: req.user.id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } },
+      ],
+    })
+
+    res.status(200).json({
+      success: true,
+      message: "Notes matching the search query retrieved successfully",
+      notes: matchingNotes,
     })
   } catch (error) {
     next(error)
