@@ -9,6 +9,7 @@ import axiosInstance from "../../utils/axiosInstance"
 import { useSelector } from "react-redux"
 import axios from "axios"
 import { toast } from "react-toastify"
+import EmptyCard from "../../components/EmptyCard/EmptyCard"
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -103,26 +104,27 @@ const Home = () => {
       <Navbar userInfo={userInfo} />
 
       <div className="container mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-4 mt-8 max-md:m-5">
-          {allNotes.map((note, index) => (
-            <NoteCard
-              key={note._id}
-              title={note.title}
-              date={note.createdAt}
-              content={note.content}
-              tags={note.tags}
-              isPinned={note.isPinned}
-              onEdit={() => {
-                handleEdit(note)
-              }}
-              onDelete={() => {
-                deleteNote(note)
-              }}
-              onPinNote={() => {}}
-            />
-          ))}
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-4 mt-8 max-md:m-5">
+            {allNotes.map((note, index) => (
+              <NoteCard
+                key={note._id}
+                title={note.title}
+                date={note.createdAt}
+                content={note.content}
+                tags={note.tags}
+                isPinned={note.isPinned}
+                onEdit={() => {
+                  handleEdit(note)
+                }}
+                onDelete={() => {
+                  deleteNote(note)
+                }}
+                onPinNote={() => {}}
+              />
+            ))}
 
-          {/* <NoteCard
+            {/* <NoteCard
             title={"Meeting on Sunday"}
             date={"5th June, 2024"}
             content={"Meeting on Sunday"}
@@ -132,7 +134,15 @@ const Home = () => {
             onDelete={() => {}}
             onPinNote={() => {}}
           /> */}
-        </div>
+          </div>
+        ) : (
+          <EmptyCard
+            imgSrc={
+              "https://cdn.iconscout.com/icon/premium/png-256-thumb/add-notes-1522344-1288402.png"
+            }
+            message={`Ready to capture your ideas? Click the 'Add' button to start noting down your thoughts, inspirations, and reminders. Let's get started!`}
+          />
+        )}
       </div>
 
       <button
